@@ -287,7 +287,7 @@ namespace AMF.Tools.Core
             if (p.Range == null)
                 return prop;
 
-            prop.OriginalName = p.Range.Name;
+            prop.OriginalName = p.Range.Name?.TrimEnd('?');
 
             prop.AmfId = p.Range.Id;
             
@@ -378,7 +378,7 @@ namespace AMF.Tools.Core
 
                 var newId = Guid.NewGuid();
                 prop.TypeId = newId;
-                ParseObject(newId, array.Name, array.Items, existingObjects, warnings, existingEnums);
+                ParseObject(newId, array.Items?.Name ?? array.Name, array.Items, existingObjects, warnings, existingEnums);
             }
 
             foreach (var parent in p.Range.Inherits)
@@ -419,7 +419,7 @@ namespace AMF.Tools.Core
 
         private string GetNameFromPath(string path)
         {
-            return path.Substring(path.LastIndexOf("#") + 1);
+            return Uri.UnescapeDataString(path.Substring(path.LastIndexOf('#') + 1));
         }
 
         //public static string MapShapeType(Shape shape) //TODO: check
