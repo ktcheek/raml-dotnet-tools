@@ -11,7 +11,9 @@ namespace AMF.Tools.Core.WebApiGenerator
             if (controllerRoutePrefix.Trim() == string.Empty)
                 return url;
 
-            var relativeUri = url == controllerRoutePrefix ? string.Empty : url.Replace(AdaptedControllerRoutePrefix(controllerRoutePrefix), string.Empty);
+            var relativeUri = (url.StartsWith("/") ? url.Substring(1) : url) == controllerRoutePrefix
+                ? string.Empty
+                : url.Replace(AdaptedControllerRoutePrefix(controllerRoutePrefix), string.Empty);
             relativeUri = ReplaceMultipleMediaTypeExtensionParamaters(relativeUri);
             relativeUri = FixConsecutiveParameters(relativeUri);
             relativeUri = FixConsecutiveSlashes(relativeUri);
