@@ -60,9 +60,7 @@ namespace AMF.Tools.Core
 
                     if (schemaObjects.ContainsKey(obj.Properties[i].InheritanceProvenance))
                     {
-                        if (string.IsNullOrWhiteSpace(obj.BaseClass))
-                            obj.BaseClass = schemaObjects[obj.Properties[i].InheritanceProvenance].Name;
-
+                        obj.BaseClass = schemaObjects[obj.Properties[i].InheritanceProvenance].Name;
                         obj.Properties.RemoveAt(i); // property is from the parent object
                     }
                 }
