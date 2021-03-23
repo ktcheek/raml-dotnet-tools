@@ -173,7 +173,16 @@ namespace AMF.Tools.Core
 
             if (shape.GetType() == typeof(AnyShape))
             {
-                return GetNetType("any", null);
+                var existingType = existingObjects?.Values.FirstOrDefault(a =>
+                    !a.IsArray &&
+                    !a.IsMap &&
+                    !a.IsMultiple &&
+                    !a.IsScalar &&
+                    !a.IsUnionType &&
+                    a.Properties.Count == 0 &&
+                    a.Name == NetNamingMapper.Capitalize(shape.Name));
+
+                return existingType?.Name ?? GetNetType("any", null);
             }
 
             if (shape is UnionShape)
