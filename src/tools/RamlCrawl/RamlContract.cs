@@ -17,6 +17,8 @@ namespace RamlCrawl
 
         public string ApiControllerBaseTemplatePath => Path.Combine(BasePath, "Templates", "ApiControllerBase.t4");
 
+        public string ApiControllerImplementationTemplatePath => Path.Combine(BasePath, "Templates", "ApiControllerImplementation.t4");
+
         public string ApiControllerInterfaceTemplatePath => Path.Combine(BasePath, "Templates", "ApiControllerInterface.t4");
 
         public string ApiEnumTemplatePath => Path.Combine(BasePath, "Templates", "ApiEnum.t4");
@@ -24,6 +26,11 @@ namespace RamlCrawl
         public string ApiModelDestinationPath => Parameters.ContainsKey("modelsFolder")
             ? Path.GetFullPath(Path.Combine(BasePath, @"..\", Parameters["modelsFolder"]))
             : Path.Combine(BasePath, Name);
+
+        public string ApiControllerImplementationDestinationPath =>
+            Parameters.ContainsKey("implementationControllersFolder")
+                ? Path.GetFullPath(Path.Combine(BasePath, @"..\", Parameters["implementationControllersFolder"]))
+                : Path.GetFullPath(Path.Combine(BasePath, @"..\", "Controllers"));
 
         public string ApiControllerBaseDestinationPath => Path.Combine(BasePath, Name);
         

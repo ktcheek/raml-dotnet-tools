@@ -38,7 +38,8 @@ namespace RamlCrawl
                                             ProcessControllerInterface,
                                             ProcessControllerBase,
                                             ProcessModels,
-                                            ProcessEnums
+                                            ProcessEnums,
+                                            ProcessControllerImplementation
                                         }
                                         .Select(x => x.Invoke(ramlContract, model))
                                         .SelectMany(x => x))
@@ -73,7 +74,7 @@ namespace RamlCrawl
             WebApiGeneratorModel model) =>
             model.Enums
                 .Select(apiEnum => DoMeasuredTask(
-                $"[{ramlContract.Name}] Processing ControllerBase {apiEnum.Name}",
+                $"[{ramlContract.Name}] Processing Enum {apiEnum.Name}",
                 () =>
                 (
                     Path.Combine(
@@ -132,6 +133,33 @@ namespace RamlCrawl
                             ("apiVersion", ""),
                             ("modelsNamespace", ramlContract.ModelsNamespace))
                 )));
+
+        private static IEnumerable<(string OutputPath, string Content)> ProcessControllerImplementation(
+            RamlContract ramlContract,
+            WebApiGeneratorModel model) =>
+            model.Controllers
+                .Select(c => new
+                {
+                    Path = Path.Combine(ramlContract.ApiControllerImplementationDestinationPath, $"{c.Name}Controller.cs"),
+                    Controller = c
+                })
+                .Where(x => !File.Exists(x.Path))
+                .Select(x => DoMeasuredTask(
+                    $"[{ramlContract.Name}] Processing ControllerImplementation {x.Controller.Name}",
+                    () =>
+                    (
+                        x.Path,
+                        "// Template: Controller Implementation (ApiControllerImplementation.t4) version 5.0\r\n" +
+                        T4Service
+                            .SetVariableReplacement("namespace", ramlContract.ControllersNamespace)
+                            .Process(
+                                ramlContract.ApiControllerImplementationTemplatePath,
+                                ("controllerObject", x.Controller),
+                                ("hasModels", true),
+                                ("useAsyncMethods", true),
+                                ("apiVersion", ""),
+                                ("modelsNamespace", ramlContract.ModelsNamespace))
+                    )));
 
         private static T DoMeasuredTask<T>(string taskName, Func<T> task)
         {
