@@ -65,7 +65,7 @@ namespace RamlCrawl
             return true;
         }
 
-        public static IEnumerable<RamlContract> LoadAll(string path = ".") =>
+        public static ICollection<RamlContract> LoadAll(string path = ".") =>
             Directory
                 .GetFiles(".", "*.raml", SearchOption.AllDirectories)
                 .Select(Path.GetFullPath)

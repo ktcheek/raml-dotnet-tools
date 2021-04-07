@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using AMF.Tools.Core.WebApiGenerator;
 
 namespace RamlCrawl
@@ -11,14 +12,21 @@ namespace RamlCrawl
     {
         private static readonly T4Service T4Service = new T4Service();
 
-        private static void Main()
+        private static void Main(string[] args)
         {
             DoMeasuredTask(
-                "Process All RAML files",
+                "Process All RAML file(s)",
                 () =>
                 {
                     foreach (var ramlContract in RamlContract.LoadAll())
                     {
+                        if (args.Contains("--download-from-source"))
+                        {
+                            DoMeasuredTask(
+                                $"Downloading {ramlContract.Name}",
+                                ramlContract.DownloadRamlFileFromSource);
+                        }
+
                         DoMeasuredTask(
                             $"Processing {ramlContract.Name}",
                             () =>
@@ -160,6 +168,14 @@ namespace RamlCrawl
                                 ("apiVersion", ""),
                                 ("modelsNamespace", ramlContract.ModelsNamespace))
                     )));
+
+        private static void DoMeasuredTask(string taskName, Func<Task> task)
+        {
+            using (new MeasuredTask(taskName))
+            {
+                task().Wait();
+            }
+        }
 
         private static T DoMeasuredTask<T>(string taskName, Func<T> task)
         {
