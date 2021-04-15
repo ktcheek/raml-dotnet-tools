@@ -287,7 +287,7 @@ namespace AMF.Tools.Core
             if (p.Range == null)
                 return prop;
 
-            prop.OriginalName = p.Range.Name?.TrimEnd('?');
+            prop.OriginalName = name.TrimEnd('?');
 
             prop.AmfId = p.Range.Id;
             
