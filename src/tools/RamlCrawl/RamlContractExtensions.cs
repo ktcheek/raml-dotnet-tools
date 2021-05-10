@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using AMF.Common;
+using AMF.Tools.Core.ClientGenerator;
 using AMF.Tools.Core.WebApiGenerator;
 
 namespace RamlCrawl
@@ -14,8 +15,21 @@ namespace RamlCrawl
             var ramlInfo = RamlInfoService.GetRamlInfo(ramlContract.RamlFile).Result;
             var model = new WebApiGeneratorService(
                     ramlInfo.RamlDocument, 
-                    ramlContract.ControllersNamespace,
+                    ramlContract.Namespace,
                     ramlContract.ModelsNamespace)
+                .BuildModel();
+
+            return model;
+        }
+
+        public static ClientGeneratorModel ToClientGeneratorModel(this RamlContract ramlContract)
+        {
+            var ramlInfo = RamlInfoService.GetRamlInfo(ramlContract.RamlFile).Result;
+            var model = new ClientGeneratorService(
+                    ramlInfo.RamlDocument, 
+                    ramlContract.RootClassName,
+                    ramlContract.Namespace,
+                    $"{ramlContract.Namespace}.Models")
                 .BuildModel();
 
             return model;
