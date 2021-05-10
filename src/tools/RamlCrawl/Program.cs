@@ -52,6 +52,8 @@ namespace RamlCrawl
                                         .Select(x => x.Invoke(ramlContract, model))
                                         .SelectMany(x => x))
                                 {
+                                    Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
+
                                     DoMeasuredTask(
                                         $"[{ramlContract.Name}] Writing {Path.GetFileName(path)}",
                                         () => File.WriteAllText(path, content));
