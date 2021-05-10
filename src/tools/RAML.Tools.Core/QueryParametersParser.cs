@@ -15,21 +15,23 @@ namespace AMF.Tools.Core
             this.schemaObjects = schemaObjects;
         }
 
-        public ApiObject GetQueryObject(ClientGeneratorMethod generatedMethod, Operation method, string objectName)
+        public ApiObject GetQueryObject(ClientGeneratorMethod generatedMethod, Operation method, string objectName,
+            IDictionary<string, ApiEnum> existingEnums = null)
         {
             var queryObject = new ApiObject { Name = generatedMethod.Name + objectName + "Query" };
-            queryObject.Properties = ParseParameters(method);
+            queryObject.Properties = ParseParameters(method, existingEnums);
 
 
             return queryObject;
         }
 
-        public IList<Property> ParseParameters(Operation method)
+        public IList<Property> ParseParameters(Operation method, IDictionary<string, ApiEnum> existingEnums = null)
         {
-            return ConvertParametersToProperties(method.Request.QueryParameters);
+            return ConvertParametersToProperties(method.Request.QueryParameters, existingEnums);
         }
 
-        public IList<Property> ConvertParametersToProperties(IEnumerable<Parameter> parameters)
+        public IList<Property> ConvertParametersToProperties(IEnumerable<Parameter> parameters, 
+            IDictionary<string, ApiEnum> existingEnums = null)
         {
             var properties = new List<Property>();
             foreach (var parameter in parameters.Where(parameter => parameter != null && parameter.Schema != null))
@@ -38,7 +40,7 @@ namespace AMF.Tools.Core
 
 				properties.Add(new Property
 				               {
-					               Type = NewNetTypeMapper.GetNetType(parameter.Schema),
+					               Type = NewNetTypeMapper.GetNetType(parameter.Schema, existingEnums: existingEnums),
 					               Name = NetNamingMapper.GetPropertyName(parameter.Name),
                                    OriginalName = parameter.Name,
 					               Description = description,

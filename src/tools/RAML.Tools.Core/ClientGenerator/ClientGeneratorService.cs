@@ -174,7 +174,7 @@ namespace AMF.Tools.Core.ClientGenerator
                                    Name = GetUniqueObjectName(resource, parent),
                                    Description = resource.Description
                                };
-                classObj.Methods = clientMethodsGenerator.GetMethods(resource, fullUrl, null, classObj.Name, parentUriParameters, modelsNamespace);
+                classObj.Methods = clientMethodsGenerator.GetMethods(resource, fullUrl, null, classObj.Name, parentUriParameters, modelsNamespace, enums);
 
                 GetInheritedUriParams(parentUriParameters, resource);
 

@@ -104,6 +104,11 @@ namespace AMF.Tools.Core
             {
                 if(shape.Values != null && shape.Values.Any())
                 {
+                    if (existingEnums != null && existingEnums.ContainsKey(id))
+                        return existingEnums[id].Name;
+                    if (newEnums != null && newEnums.ContainsKey(id))
+                        return newEnums[id].Name;
+
                     var key = GetTypeFromLinkOrId(id);
                     if (existingEnums != null && existingEnums.ContainsKey(key))
                         return existingEnums[key].Name;

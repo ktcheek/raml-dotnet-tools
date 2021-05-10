@@ -33,7 +33,8 @@ namespace AMF.Tools.Core.ClientGenerator
         }
 
         public ICollection<ClientGeneratorMethod> GetMethods(RAML.Parser.Model.EndPoint resource, string url, ClassObject parent, string objectName, 
-            IDictionary<string, Parameter> parentUriParameters, string modelsNamespace)
+            IDictionary<string, Parameter> parentUriParameters, string modelsNamespace, 
+            IDictionary<string, ApiEnum> existingEnums = null)
         {
             var methodsNames = new List<string>();
             if (parent != null)
@@ -45,14 +46,15 @@ namespace AMF.Tools.Core.ClientGenerator
 
             foreach (var method in resource.Operations)
             {
-                AddGeneratedMethod(resource, url, objectName, method, methodsNames, generatorMethods, parentUriParameters, modelsNamespace);
+                AddGeneratedMethod(resource, url, objectName, method, methodsNames, generatorMethods, parentUriParameters, modelsNamespace, existingEnums);
             }
 
             return generatorMethods;
         }
 
         private void AddGeneratedMethod(RAML.Parser.Model.EndPoint resource, string url, string objectName, Operation method, ICollection<string> methodsNames, 
-            ICollection<ClientGeneratorMethod> generatorMethods, IDictionary<string, Parameter> parentUriParameters, string modelsNamespace)
+            ICollection<ClientGeneratorMethod> generatorMethods, IDictionary<string, Parameter> parentUriParameters, string modelsNamespace,
+            IDictionary<string, ApiEnum> existingEnums = null)
         {
             var generatedMethod = BuildClassMethod(url, method, resource, modelsNamespace);
             if (generatedMethod.ReturnType != "string")
@@ -77,7 +79,7 @@ namespace AMF.Tools.Core.ClientGenerator
             if (methodsNames.Contains(generatedMethod.Name))
                 generatedMethod.Name = GetUniqueName(methodsNames, generatedMethod.Name, resource.Path);
 
-            GetQueryParameters(objectName, method, generatedMethod);
+            GetQueryParameters(objectName, method, generatedMethod, existingEnums);
 
             GetHeaders(objectName, method, generatedMethod);
 
@@ -134,11 +136,12 @@ namespace AMF.Tools.Core.ClientGenerator
             return generatedMethod.ReturnTypeObject.Properties.First().Type;
         }
 
-        private void GetQueryParameters(string objectName, Operation method, ClientGeneratorMethod generatedMethod)
+        private void GetQueryParameters(string objectName, Operation method, ClientGeneratorMethod generatedMethod,
+            IDictionary<string, ApiEnum> existingEnums = null)
         {
             if (method.Request != null && method.Request.QueryParameters != null && method.Request.QueryParameters.Any())
             {
-                var queryObject = queryParametersParser.GetQueryObject(generatedMethod, method, objectName);
+                var queryObject = queryParametersParser.GetQueryObject(generatedMethod, method, objectName, existingEnums);
                 generatedMethod.Query = queryObject;
                 if (!queryObjects.ContainsKey(queryObject.Name))
                     queryObjects.Add(queryObject.Name, queryObject);
