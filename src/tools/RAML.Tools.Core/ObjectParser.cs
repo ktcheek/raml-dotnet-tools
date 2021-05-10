@@ -317,10 +317,26 @@ namespace AMF.Tools.Core
                     if (newEnums.ContainsKey(amfId))
                         return prop;
 
-                    if (existingEnums.Values.Any(o => o.Name == apiEnum.Name) || newEnums.Values.Any(o => o.Name == apiEnum.Name))
+                    var existing = existingEnums.Values.FirstOrDefault(o => o.Name == apiEnum.Name) ??
+                                   newEnums.Values.FirstOrDefault(o => o.Name == apiEnum.Name);
+                    if (existing != null)
                     {
                         if (UniquenessHelper.HasSamevalues(apiEnum, existingEnums, newEnums))
+                        {
                             return prop;
+                        }
+
+                        if (existing.Values.SingleOrDefault(x => x.OriginalName == "Inherited") != null)
+                        {
+                            // Replace inherited value
+                            existing.Values = apiEnum.Values;
+                            return prop;
+                        }
+                        else if (apiEnum.Values.SingleOrDefault(x => x.OriginalName == "Inherited") != null)
+                        {
+                            // Ignore inherited value
+                            return prop;
+                        }
 
                         apiEnum.Name = UniquenessHelper.GetUniqueName(apiEnum.Name, existingEnums, newEnums);
                         prop.Type = apiEnum.Name;
