@@ -114,6 +114,15 @@ namespace AMF.Tools.Core
                         return existingEnums[key].Name;
                     if (newEnums != null && newEnums.ContainsKey(key))
                         return newEnums[key].Name;
+
+                    var match =
+                        existingEnums?.FirstOrDefault(x => x.Value.Name == shape.Name).Value ??
+                        newEnums?.FirstOrDefault(x => x.Value.Name == shape.Name).Value;
+                    if (match != null &&
+                        new HashSet<string>(shape.Values).SetEquals(match.Values.Select(x => x.OriginalName)))
+                    {
+                        return match.Name;
+                    }
                 }
                 return GetNetType(scalar.DataType.Substring(scalar.DataType.LastIndexOf('#') + 1), scalar.Format);
             }
