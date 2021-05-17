@@ -450,6 +450,14 @@ namespace AMF.Tools.Core
                 if (shape == null)
                     continue;
 
+                if (payload.MediaType == "binary/octet-stream" && shape is AnyShape)
+                {
+                    shape = new FileShape(default, default, default, default, default, default, default, default,
+                        default, Enumerable.Empty<string>(), default, default, Enumerable.Empty<Example>(), shape.Id,
+                        shape.Name, shape.DisplayName, shape.Description, shape.Default, shape.Values, shape.Inherits,
+                        shape.LinkTargetName);
+                }
+
                 ParseObjects(key, objects, shape);
             }
         }

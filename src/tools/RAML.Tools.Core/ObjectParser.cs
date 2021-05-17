@@ -99,8 +99,10 @@ namespace AMF.Tools.Core
                 Example = MapExample(shape)
             };
 
-            if (isRootType && apiObj.IsScalar)
+            if (isRootType && apiObj.IsScalar || shape is FileShape)
+            {
                 apiObj.Type = NewNetTypeMapper.GetNetType(shape, existingObjects);
+            }
 
             if (isRootType && apiObj.IsArray && shape is ArrayShape arrShape)
             {
