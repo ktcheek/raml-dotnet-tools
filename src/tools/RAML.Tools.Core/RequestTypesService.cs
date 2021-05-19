@@ -78,6 +78,7 @@ namespace AMF.Tools.Core
         {
             var res = NetNamingMapper.GetObjectName(name);
             res = res.Substring(0, 1).ToLowerInvariant() + res.Substring(1);
+            res = res.StartsWith("iList") ? res.Replace("iList", "listOf") : res;
             return res;
         }
 
